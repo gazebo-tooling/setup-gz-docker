@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
-          base_image_tag: [bionic, focal, xenial]
+          base_image_tag: [bionic, focal]
     name: "${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
     # when it comes to building docker images.
@@ -30,9 +30,8 @@ jobs:
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
-            ROS_DISTRO=none
-            ROS_APT_REPO_URLS=http://packages.ros.org/ros,http://packages.ros.org/ros2
-        imageName: "setup-ros-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
+            IGN_DISTRO=none
+        imageName: "setup-ign-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
     # Publish the image to DockerHub too
     - run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
     - run: docker images
@@ -46,69 +45,24 @@ jobs:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
-          ros_distro: [kinetic, melodic, dashing, eloquent, foxy]
-          ros_variant: [desktop, ros-base]
+          ign_distro: [citadel, dome, edifice]
           include:
 
-          # Kinetic Kame (May 2016 - May 2021)
-          - ros_distro: kinetic
-            base_image_tag: xenial
-            ros_variant: desktop
-            ros_repo_url: http://packages.ros.org/ros
-            output_image_tag: ubuntu-xenial-ros-kinetic-desktop
-          - ros_distro: kinetic
-            base_image_tag: xenial
-            ros_variant: ros-base
-            ros_repo_url: http://packages.ros.org/ros
-            output_image_tag: ubuntu-xenial-ros-kinetic-ros-base
+          - ign_distro: citadel 
+            base_image_tag: bionic 
+            output_image_tag: ubuntu-bionic-ign-citadel
 
-          # Melodic Morenia (May 2018 - May 2023)
-          - ros_distro: melodic
-            base_image_tag: bionic
-            ros_variant: desktop
-            ros_repo_url: http://packages.ros.org/ros
-            output_image_tag: ubuntu-bionic-ros-melodic-desktop
-          - ros_distro: melodic
-            base_image_tag: bionic
-            ros_variant: ros-base
-            ros_repo_url: http://packages.ros.org/ros
-            output_image_tag: ubuntu-bionic-ros-melodic-ros-base
+          - ign_distro: dome
+            base_image_tag: bionic 
+            output_image_tag: ubuntu-bionic-ign-dome
 
-          # Dashing Diademata (May 2019 - May 2021)
-          - ros_distro: dashing
-            base_image_tag: bionic
-            ros_variant: desktop
-            ros_repo_url: http://packages.ros.org/ros2
-            output_image_tag: ubuntu-bionic-ros-dashing-desktop
-          - ros_distro: dashing
-            base_image_tag: bionic
-            ros_variant: ros-base
-            ros_repo_url: http://packages.ros.org/ros2
-            output_image_tag: ubuntu-bionic-ros-dashing-ros-base
-
-          # Eloquent Elusor (November 2019 - November 2020)
-          - ros_distro: eloquent
-            base_image_tag: bionic
-            ros_variant: desktop
-            ros_repo_url: http://packages.ros.org/ros2
-            output_image_tag: ubuntu-bionic-ros-eloquent-desktop
-          - ros_distro: eloquent
-            base_image_tag: bionic
-            ros_variant: ros-base
-            ros_repo_url: http://packages.ros.org/ros2
-            output_image_tag: ubuntu-bionic-ros-eloquent-ros-base
-
-          # Foxy Fitzroy (May 2020 - May 2023+)
-          - ros_distro: foxy
+          - ign_distro: dome
             base_image_tag: focal
-            ros_variant: desktop
-            ros_repo_url: http://packages.ros.org/ros2-testing
-            output_image_tag: ubuntu-focal-ros-foxy-desktop-testing
-          - ros_distro: foxy
+            output_image_tag: ubuntu-focal-ign-dome
+
+          - ign_distro: edifice
             base_image_tag: focal
-            ros_variant: ros-base
-            ros_repo_url: http://packages.ros.org/ros2-testing
-            output_image_tag: ubuntu-focal-ros-foxy-ros-base-testing
+            output_image_tag: ubuntu-focal-ign-edifice
 
     name: "${{ matrix.output_image_tag }}"
     # always use latest linux worker, as it should not have any impact
@@ -126,9 +80,8 @@ jobs:
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             EXTRA_APT_PACKAGES=ros-${{ matrix.ros_distro }}-${{ matrix.ros_variant }}
             VCS_REF=${{ github.sha }}
-            ROS_DISTRO=${{ matrix.ros_distro }}
-            ROS_APT_REPO_URLS=${{ matrix.ros_repo_url }}
-        imageName: "setup-ros-docker-${{ matrix.output_image_tag }}"
+            IGN_DISTRO=${{ matrix.ign_distro }}
+        imageName: "setup-ign-docker-${{ matrix.output_image_tag }}"
     # Publish the image to DockerHub too
     - run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
     - run: docker images
@@ -136,34 +89,3 @@ jobs:
       if: github.event_name != 'pull_request'
     - run: "docker push rostooling/setup-ros-docker:${{ matrix.output_image_tag }}-latest"
       if: github.event_name != 'pull_request'
-
-  log_workflow_status_to_cloudwatch:
-    runs-on: ubuntu-latest
-    container:
-      image: ubuntu:bionic
-    needs:
-    - build_ubuntu_docker_image
-    - build_ubuntu_docker_image_ros
-    if: always()  # run even if the dependent jobs have failed to log failures
-    # Allow build reports to fail on pull requests.
-    # When a contribution is made on a fork, the secrets will not be available,
-    # and this step will be failing. This is acceptable.
-    # On the other end, we want to be notified if this happens on merge, or
-    # on schedule.
-    continue-on-error: ${{ github.event_name == 'pull_request'}}
-    steps:
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-    - uses: ros-tooling/action-cloudwatch-metrics@0.0.4
-      with:
-        # Checks if any of the jobs have failed.
-        #
-        # needs.*.result is returns the list of all success statuses as an
-        # array, i.e. ['success', 'failure, 'success']
-        # join() converts the array to a string 'successfailuresuccess'
-        # contains() checks whether the string contains failure
-        metric-value: ${{ ! contains(join(needs.*.result, ''), 'failure') && ! contains(join(needs.*.result, ''), 'cancelled') }}
