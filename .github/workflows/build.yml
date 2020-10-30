@@ -23,22 +23,16 @@ jobs:
     - name: checkout repository
       uses: actions/checkout@v2
     - name: publish image
-      uses: matootie/github-docker@v2.2.2
+      uses: matootie/github-docker@v3.1.0
       with:
-        accessToken: ${{ secrets.github_token }}
-        buildArg: |
+        accessToken: ${{ secrets.DOCKER_PASSWORD }}
+        containerRegistry: true
+        buildArgs: |
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=none
         imageName: "setup-ign-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
-    # Publish the image to DockerHub too
-    - run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
-    - run: docker images
-    - run: "docker tag ghcr.io/mjcarroll/setup-ign-docker/setup-ign-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}:master mjcarroll/setup-ign-docker:${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}-latest"
-      if: github.event_name != 'pull_request'
-    - run: "docker push mjcarroll/setup-ign-docker:${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}-latest"
-      if: github.event_name != 'pull_request'
 
   build_ubuntu_docker_image_ign:
     strategy:
@@ -72,19 +66,13 @@ jobs:
     - name: checkout repository
       uses: actions/checkout@v2
     - name: publish image
-      uses: matootie/github-docker@v2.2.2
+      uses: matootie/github-docker@v3.1.0
       with:
-        accessToken: ${{ secrets.github_token }}
-        buildArg: |
+        accessToken: ${{ secrets.DOCKER_PASSWORD }}
+        containerRegistry: true
+        buildArgs: |
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=${{ matrix.ign_distro }}
         imageName: "setup-ign-docker-${{ matrix.output_image_tag }}"
-    # Publish the image to DockerHub too
-    - run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
-    - run: docker images
-    - run: "docker tag ghcr.io/mjcarroll/setup-ign-docker/setup-ign-docker-${{ matrix.output_image_tag }}:master mjcarroll/setup-ign-docker:${{ matrix.output_image_tag }}-latest"
-      if: github.event_name != 'pull_request'
-    - run: "docker push mjcarroll/setup-ign-docker:${{ matrix.output_image_tag }}-latest"
-      if: github.event_name != 'pull_request'

@@ -3,6 +3,8 @@ set -euxo pipefail
 
 readonly IGN_DISTRO=$1
 
+EXCLUDE_APT="libignition|libsdformat"
+
 apt-get update
 apt-get install --no-install-recommends --quiet --yes sudo
 
@@ -17,6 +19,7 @@ apt-get update
 apt-get install --no-install-recommends --quiet --yes \
     curl gnupg2 locales lsb-release wget
 
+export UBUNTU_VERSION=`lsb_release -cs`
 locale-gen en_US en_US.UTF-8
 export LANG=en_US.UTF-8
 
@@ -25,7 +28,7 @@ ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
 apt-get install --no-install-recommends --quiet --yes tzdata
 
 wget http://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-echo  "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -sc) main" > /etc/apt/sources.list.d/gazebo-stable.list
+echo  "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable $UBUNTU_VERSION main" > /etc/apt/sources.list.d/gazebo-stable.list
 
 apt-get update
 
@@ -43,6 +46,7 @@ apt-get install --no-install-recommends --quiet --yes \
 	libtinyxml2-dev \
 	python3-dev \
 	python3-pip \
+  python3-setuptools \
 	python3-wheel
 
 pip3 install --upgrade \
@@ -98,5 +102,22 @@ pip3 install --upgrade \
 	setuptools \
   vcstool \
 	wheel
+
+
+if [ "$IGN_DISTRO" != "none" ]; then
+  mkdir -p workspace/src
+  cd workspace
+  wget https://raw.githubusercontent.com/ignition-tooling/gazebodistro/master/collection-$IGN_DISTRO.yaml 
+  vcs import src < collection-$IGN_DISTRO.yaml
+
+  ALL_PACKAGES=$( \
+    sort -u $(find . -iname 'packages-'$UBUNTU_VERSION'.apt' -o -iname 'packages.apt') | grep -Ev $EXCLUDE_APT | tr '\n' ' ')
+
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get install --no-install-recommends --quiet --yes \
+    $ALL_PACKAGES
+
+  cd .. && rm -rf workspace
+fi
 
 rm -rf "/var/lib/apt/lists/*"
