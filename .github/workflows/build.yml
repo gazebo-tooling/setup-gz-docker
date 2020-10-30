@@ -35,12 +35,12 @@ jobs:
     # Publish the image to DockerHub too
     - run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
     - run: docker images
-    - run: "docker tag docker.pkg.github.com/ros-tooling/setup-ros-docker/setup-ros-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}:master rostooling/setup-ros-docker:${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}-latest"
+    - run: "docker tag ghcr.io/mjcarroll/setup-ign-docker/setup-ign-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}:master mjcarroll/setup-ign-docker:${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}-latest"
       if: github.event_name != 'pull_request'
-    - run: "docker push rostooling/setup-ros-docker:${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}-latest"
+    - run: "docker push mjcarroll/setup-ign-docker:${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}-latest"
       if: github.event_name != 'pull_request'
 
-  build_ubuntu_docker_image_ros:
+  build_ubuntu_docker_image_ign:
     strategy:
       fail-fast: false
       matrix:
@@ -78,14 +78,13 @@ jobs:
         buildArg: |
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
-            EXTRA_APT_PACKAGES=ros-${{ matrix.ros_distro }}-${{ matrix.ros_variant }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=${{ matrix.ign_distro }}
         imageName: "setup-ign-docker-${{ matrix.output_image_tag }}"
     # Publish the image to DockerHub too
     - run: docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
     - run: docker images
-    - run: "docker tag docker.pkg.github.com/ros-tooling/setup-ros-docker/setup-ros-docker-${{ matrix.output_image_tag }}:master rostooling/setup-ros-docker:${{ matrix.output_image_tag }}-latest"
+    - run: "docker tag ghcr.io/mjcarroll/setup-ign-docker/setup-ign-docker-${{ matrix.output_image_tag }}:master mjcarroll/setup-ign-docker:${{ matrix.output_image_tag }}-latest"
       if: github.event_name != 'pull_request'
-    - run: "docker push rostooling/setup-ros-docker:${{ matrix.output_image_tag }}-latest"
+    - run: "docker push mjcarroll/setup-ign-docker:${{ matrix.output_image_tag }}-latest"
       if: github.event_name != 'pull_request'
