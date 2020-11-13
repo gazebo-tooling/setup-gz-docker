@@ -55,7 +55,7 @@ jobs:
           - ign_distro: edifice
             base_image_tag: focal
 
-    name: "${{ matrix.base_image_name }}-${{ ign_distro }}-${{ base_image_tag }}"
+    name: "${{ matrix.base_image_name }}-${{ matrix.ign_distro }}-${{ matrix.base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
     # when it comes to building docker images.
     runs-on: ubuntu-latest
