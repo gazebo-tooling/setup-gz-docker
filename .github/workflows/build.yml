@@ -68,7 +68,7 @@ jobs:
     - name: publish image
       uses: matootie/github-docker@v3.1.0
       with:
-        accessToken: ${{ secrets.DOCKER_PASSWORD }}
+        accessToken: ${{ secrets.ACCESS_TOKEN }}
         containerRegistry: true
         buildArgs: |
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
