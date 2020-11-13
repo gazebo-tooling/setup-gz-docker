@@ -32,7 +32,8 @@ jobs:
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=none
-        imageName: "${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
+        imageName: "ign-${{ matrix.base_image_name }}"
+        tag: "${{ matrix.base_image_tag }}"
 
   build_ubuntu_docker_image_ign:
     strategy:
@@ -44,21 +45,17 @@ jobs:
 
           - ign_distro: citadel 
             base_image_tag: bionic 
-            output_image_tag: ign-bionic-citadel
 
           - ign_distro: dome
             base_image_tag: bionic 
-            output_image_tag: ign-bionic-dome
 
           - ign_distro: dome
             base_image_tag: focal
-            output_image_tag: ign-focal-dome
 
           - ign_distro: edifice
             base_image_tag: focal
-            output_image_tag: ign-focal-edifice 
 
-    name: "${{ matrix.output_image_tag }}"
+    name: "${{ matrix.base_image_name }}-${{ ign_distro }}-${{ base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
     # when it comes to building docker images.
     runs-on: ubuntu-latest
@@ -75,4 +72,5 @@ jobs:
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=${{ matrix.ign_distro }}
-        imageName: "${{ matrix.output_image_tag }}"
+        imageName: "ign-${{ matrix.base_image_name }}"
+        tag: "${{ matrix.ign_distro }}-${{ matrix.base_image_tag }}"
