@@ -25,14 +25,14 @@ jobs:
     - name: publish image
       uses: matootie/github-docker@v3.1.0
       with:
-        accessToken: ${{ secrets.DOCKER_PASSWORD }}
+        accessToken: ${{ secrets.ACCESS_TOKEN }}
         containerRegistry: true
         buildArgs: |
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=none
-        imageName: "setup-ign-docker-${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
+        imageName: "${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
 
   build_ubuntu_docker_image_ign:
     strategy:
@@ -44,19 +44,19 @@ jobs:
 
           - ign_distro: citadel 
             base_image_tag: bionic 
-            output_image_tag: ubuntu-bionic-ign-citadel
+            output_image_tag: ign-bionic-citadel
 
           - ign_distro: dome
             base_image_tag: bionic 
-            output_image_tag: ubuntu-bionic-ign-dome
+            output_image_tag: ign-bionic-dome
 
           - ign_distro: dome
             base_image_tag: focal
-            output_image_tag: ubuntu-focal-ign-dome
+            output_image_tag: ign-focal-dome
 
           - ign_distro: edifice
             base_image_tag: focal
-            output_image_tag: ubuntu-focal-ign-edifice
+            output_image_tag: ign-focal-edifice 
 
     name: "${{ matrix.output_image_tag }}"
     # always use latest linux worker, as it should not have any impact
@@ -75,4 +75,4 @@ jobs:
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             IGN_DISTRO=${{ matrix.ign_distro }}
-        imageName: "setup-ign-docker-${{ matrix.output_image_tag }}"
+        imageName: "${{ matrix.output_image_tag }}"
