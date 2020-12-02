@@ -19,13 +19,10 @@ FROM "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}"
 # Commit ID this image is based upon
 ARG VCS_REF
 
-# The ROS distribution being targeted by this image
+# The Ignition distribution being targeted by this image
 ARG IGN_DISTRO
 
 # Additional APT packages to be installed
-#
-# This is used to build Docker images incorporating various ROS, or ROS 2
-# distributions. E.g. "ros-melodic-desktop ros-eloquent-desktop"
 ARG EXTRA_APT_PACKAGES
 
 # See http://label-schema.org/rc1/ for label documentation
@@ -36,6 +33,7 @@ LABEL org.label-schema.url="https://github.com/ignition-tooling/setup-ign-docker
 LABEL org.label-schema.vcs-url="https://github.com/ignition-tooling/setup-ign-docker.git"
 LABEL org.label-schema.vcs-ref="${VCS_REF}"
 LABEL org.label-schema.vendor="IgnitionRobotics.org"
+LABEL org.opencontainers.image.source="https://github.com/ignition-tooling/setup-ign-docker"
 
 COPY setup-ign.sh /tmp/setup-ign.sh
 RUN /tmp/setup-ign.sh "${IGN_DISTRO}" && rm -f /tmp/setup-ign.sh
