@@ -41,4 +41,3 @@ ENV LANG en_US.UTF-8
 RUN for i in $(echo ${EXTRA_APT_PACKAGES} | tr ',' ' '); do \
         apt-get install --yes --no-install-recommends "$i"; \
     done
-USER ignbuild
