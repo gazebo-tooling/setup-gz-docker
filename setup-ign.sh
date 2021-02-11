@@ -74,7 +74,7 @@ pip3 install --upgrade \
   colcon-ros==0.3.17 \
   colcon-test-result==0.3.8 \
   coverage \
-  cryptography \
+  cryptography==3.3.2 \
   empy \
   "flake8<3.8" \
   flake8-blind-except \
