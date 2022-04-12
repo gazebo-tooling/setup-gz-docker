@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
-          base_image_tag: [bionic, focal]
+          base_image_tag: [bionic, focal, jammy]
     name: "${{ matrix.base_image_name }}-${{ matrix.base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
     # when it comes to building docker images.
@@ -40,20 +40,20 @@ jobs:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
-          ign_distro: [citadel, dome, edifice]
+          ign_distro: [citadel, fortress, garden]
           include:
 
           - ign_distro: citadel 
             base_image_tag: bionic 
 
-          - ign_distro: dome
-            base_image_tag: bionic 
+          - ign_distro: fortress 
+            base_image_tag: focal 
 
-          - ign_distro: dome
+          - ign_distro: garden 
             base_image_tag: focal
 
-          - ign_distro: edifice
-            base_image_tag: focal
+          - ign_distro: garden 
+            base_image_tag: jammy 
 
     name: "${{ matrix.base_image_name }}-${{ matrix.ign_distro }}-${{ matrix.base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
