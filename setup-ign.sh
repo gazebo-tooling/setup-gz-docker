@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 readonly IGN_DISTRO=$1
-EXCLUDE_APT="libignition|libsdformat"
+EXCLUDE_APT="libignition|libsdformat|python3-ignition"
 
 apt-get update
 apt-get install --no-install-recommends --quiet --yes \
