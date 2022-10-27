@@ -19,7 +19,7 @@ FROM "${BASE_IMAGE_NAME}:${BASE_IMAGE_TAG}"
 # Commit ID this image is based upon
 ARG VCS_REF
 
-# The Ignition distribution being targeted by this image
+# The Gazebo distribution being targeted by this image
 ARG GZ_DISTRO
 
 # Additional APT packages to be installed
@@ -36,7 +36,7 @@ LABEL org.label-schema.vendor="gazebosim.org"
 LABEL org.opencontainers.image.source="https://github.com/gazebo-tooling/setup-gz-docker"
 
 COPY setup-gz.sh /tmp/setup-gz.sh
-RUN /tmp/setup-ign.sh "${GZ_DISTRO}" && rm -f /tmp/setup-gz.sh
+RUN /tmp/setup-gz.sh "${GZ_DISTRO}" && rm -f /tmp/setup-gz.sh
 ENV LANG en_US.UTF-8
 RUN for i in $(echo ${EXTRA_APT_PACKAGES} | tr ',' ' '); do \
   apt-get install --yes --no-install-recommends "$i"; \

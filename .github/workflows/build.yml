@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - main 
+      - main
   schedule:
     # Run the CI automatically every hour to look for flakyness.
     - cron:  '0 * * * *'
@@ -40,18 +40,13 @@ jobs:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
-          gz_distro: [citadel, fortress, garden]
           include:
-
           - gz_distro: citadel
             base_image_tag: bionic
-
           - gz_distro: fortress
             base_image_tag: focal
-
           - gz_distro: garden
             base_image_tag: focal
-
           - gz_distro: garden
             base_image_tag: jammy
 
