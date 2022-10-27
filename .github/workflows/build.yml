@@ -31,31 +31,31 @@ jobs:
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
-            IGN_DISTRO=none
-        imageName: "ign-${{ matrix.base_image_name }}"
+            GZ_DISTRO=none
+        imageName: "gz-${{ matrix.base_image_name }}"
         tag: "${{ matrix.base_image_tag }}"
 
-  build_ubuntu_docker_image_ign:
+  build_ubuntu_docker_image_gz:
     strategy:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
-          ign_distro: [citadel, fortress, garden]
+          gz_distro: [citadel, fortress, garden]
           include:
 
-          - ign_distro: citadel 
-            base_image_tag: bionic 
+          - gz_distro: citadel
+            base_image_tag: bionic
 
-          - ign_distro: fortress 
-            base_image_tag: focal 
-
-          - ign_distro: garden 
+          - gz_distro: fortress
             base_image_tag: focal
 
-          - ign_distro: garden 
-            base_image_tag: jammy 
+          - gz_distro: garden
+            base_image_tag: focal
 
-    name: "${{ matrix.base_image_name }}-${{ matrix.ign_distro }}-${{ matrix.base_image_tag }}"
+          - gz_distro: garden
+            base_image_tag: jammy
+
+    name: "${{ matrix.base_image_name }}-${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
     # when it comes to building docker images.
     runs-on: ubuntu-latest
@@ -71,6 +71,6 @@ jobs:
             BASE_IMAGE_NAME=${{ matrix.base_image_name }}
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
-            IGN_DISTRO=${{ matrix.ign_distro }}
-        imageName: "ign-${{ matrix.base_image_name }}"
-        tag: "${{ matrix.ign_distro }}-${{ matrix.base_image_tag }}"
+            GZ_DISTRO=${{ matrix.gz_distro }}
+        imageName: "gz-${{ matrix.base_image_name }}"
+        tag: "${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}"

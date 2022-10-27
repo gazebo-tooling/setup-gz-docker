@@ -1,16 +1,16 @@
 #!/bin/bash
 set -euxo pipefail
 
-readonly IGN_DISTRO=$1
+readonly GZ_DISTRO=$1
 EXCLUDE_APT="libignition|libsdformat|python3-ignition"
 
 apt-get update
 apt-get install --no-install-recommends --quiet --yes \
     sudo
 
-groupadd -r ignbuild
-useradd --no-log-init --create-home -r -g ignbuild ignbuild
-echo "ignbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+groupadd -r gzbuild
+useradd --no-log-init --create-home -r -g gzbuild gzbuild
+echo "gzbuild ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 echo 'Etc/UTC' > /etc/timezone
 
@@ -103,11 +103,11 @@ pip3 install --upgrade \
   vcstool \
   wheel
 
-if [ "$IGN_DISTRO" != "none" ]; then
+if [ "$GZ_DISTRO" != "none" ]; then
   mkdir -p workspace/src
   cd workspace
-  wget https://raw.githubusercontent.com/ignition-tooling/gazebodistro/master/collection-$IGN_DISTRO.yaml
-  vcs import src < collection-$IGN_DISTRO.yaml
+  wget https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/collection-$GZ_DISTRO.yaml
+  vcs import src < collection-$GZ_DISTRO.yaml
 
   ALL_PACKAGES=$( \
     sort -u $(find . -iname 'packages-'$UBUNTU_VERSION'.apt' -o -iname 'packages.apt') | grep -Ev $EXCLUDE_APT | tr '\n' ' ')
