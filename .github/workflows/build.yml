@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    # Run the CI automatically every hour to look for flakyness.
-    - cron:  '0 * * * *'
+    # Run the CI nightly
+    - cron: '0 0 * * *'
 
 jobs:
   build_ubuntu_docker_image:
