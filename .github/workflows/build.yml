@@ -40,16 +40,23 @@ jobs:
       fail-fast: false
       matrix:
           base_image_name: [ubuntu]
+          build_name: [citadel-bionic, fortress-bionic, fortress-focal, garden-focal, garden-jammy]
           include:
-          - gz_distro: citadel
+          - build_name: citadel-bionic
+            gz_distro: citadel
             base_image_tag: bionic
-          - gz_distro: fortress
+          - build_name: fortress-bionic
+            gz_distro: fortress
+            base_image_tag: bionic
+          - build_name: fortress-focal
+            gz_distro: fortress
             base_image_tag: focal
-          - gz_distro: garden
+          - build_name: garden-focal
+            gz_distro: garden
             base_image_tag: focal
-          - gz_distro: garden
+          - build_name: garden-jammy
+            gz_distro: garden
             base_image_tag: jammy
-
     name: "${{ matrix.base_image_name }}-${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}"
     # always use latest linux worker, as it should not have any impact
     # when it comes to building docker images.
