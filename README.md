@@ -8,9 +8,9 @@ Used to cache common binary dependencies to speed up Github Actions builds.
 This currently uses Github Actions `on-schedule` to build hourly.
 
 
-## Installed depdendencies
+## Installed dependencies
 
-A set of base depdencies are installed for ease of CI/development use.
+A set of base dependencies are installed for ease of CI/development use.
 These include:
 * build-essential + clang + cmake
 * [`vcstool`](https://github.com/dirk-thomas/vcstool)
@@ -35,7 +35,9 @@ These include:
 
 * `ghcr.io/gazebo-tooling/gz-ubuntu:bionic` - Base bionic development image with no Gazebo-collection specific binaries
 * `ghcr.io/gazebo-tooling/gz-ubuntu:focal` - Base focal development image with no Gazebo-collection specific binaries
+* `ghcr.io/gazebo-tooling/gz-ubuntu:jammy` - Base jammy development image with no Gazebo-collection specific binaries
 * `ghcr.io/gazebo-tooling/gz-ubuntu:citadel-bionic` - Bionic image with Citadel dependencies 
-* `ghcr.io/gazebo-tooling/gz-ubuntu:dome-focal` - Focal image with Dome dependencies 
-* `ghcr.io/gazebo-tooling/gz-ubuntu:edifice-focal` - Focal image with Edifice dependencies 
+* `ghcr.io/gazebo-tooling/gz-ubuntu:fortress-focal` - Focal image with Fortress dependencies 
+* `ghcr.io/gazebo-tooling/gz-ubuntu:garden-jammy` - Jammy image with Garden dependencies 
+
 
