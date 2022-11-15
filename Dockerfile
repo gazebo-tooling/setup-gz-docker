@@ -22,6 +22,13 @@ ARG VCS_REF
 # The Gazebo distribution being targeted by this image
 ARG GZ_DISTRO
 
+# The type of install to perform. Base, Deps, Full, Source
+# base_only - Only base image with dev tools installed for OS version
+# deps_only - Base image plus all dependencies for a OS/GZ version
+# binary - Install full collection for OS/GZ version
+# source - Clone source for OS/GZ version
+ARG GZ_INSTALL
+
 # Additional APT packages to be installed
 ARG EXTRA_APT_PACKAGES
 
@@ -36,7 +43,7 @@ LABEL org.label-schema.vendor="gazebosim.org"
 LABEL org.opencontainers.image.source="https://github.com/gazebo-tooling/setup-gz-docker"
 
 COPY setup-gz.sh /tmp/setup-gz.sh
-RUN /tmp/setup-gz.sh "${GZ_DISTRO}" && rm -f /tmp/setup-gz.sh
+RUN /tmp/setup-gz.sh "${GZ_DISTRO}" "${GZ_INSTALL}" && rm -f /tmp/setup-gz.sh
 ENV LANG en_US.UTF-8
 RUN for i in $(echo ${EXTRA_APT_PACKAGES} | tr ',' ' '); do \
   apt-get install --yes --no-install-recommends "$i"; \

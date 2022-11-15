@@ -32,6 +32,7 @@ jobs:
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             GZ_DISTRO=none
+            GZ_INSTALL=base_only
         imageName: "gz-${{ matrix.base_image_name }}"
         tag: "${{ matrix.base_image_tag }}"
 
@@ -74,5 +75,92 @@ jobs:
             BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
             VCS_REF=${{ github.sha }}
             GZ_DISTRO=${{ matrix.gz_distro }}
+            GZ_INSTALL=deps_only
         imageName: "gz-${{ matrix.base_image_name }}"
         tag: "${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}"
+
+  build_ubuntu_docker_image_gz_binary:
+    strategy:
+      fail-fast: false
+      matrix:
+          base_image_name: [ubuntu]
+          build_name: [citadel-bionic, fortress-bionic, fortress-focal, garden-focal, garden-jammy]
+          include:
+          - build_name: citadel-bionic
+            gz_distro: citadel
+            base_image_tag: bionic
+          - build_name: fortress-bionic
+            gz_distro: fortress
+            base_image_tag: bionic
+          - build_name: fortress-focal
+            gz_distro: fortress
+            base_image_tag: focal
+          - build_name: garden-focal
+            gz_distro: garden
+            base_image_tag: focal
+          - build_name: garden-jammy
+            gz_distro: garden
+            base_image_tag: jammy
+    name: "${{ matrix.base_image_name }}-${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}-binary"
+    # always use latest linux worker, as it should not have any impact
+    # when it comes to building docker images.
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repository
+      uses: actions/checkout@v2
+    - name: publish image
+      uses: matootie/github-docker@v3.1.0
+      with:
+        accessToken: ${{ secrets.ACCESS_TOKEN }}
+        containerRegistry: true
+        buildArgs: |
+            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
+            BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
+            VCS_REF=${{ github.sha }}
+            GZ_DISTRO=${{ matrix.gz_distro }}
+            GZ_INSTALL=binary
+        imageName: "gz-${{ matrix.base_image_name }}"
+        tag: "${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}-binary"
+
+  build_ubuntu_docker_image_gz_source:
+    strategy:
+      fail-fast: false
+      matrix:
+          base_image_name: [ubuntu]
+          build_name: [citadel-bionic, fortress-bionic, fortress-focal, garden-focal, garden-jammy]
+          include:
+          - build_name: citadel-bionic
+            gz_distro: citadel
+            base_image_tag: bionic
+          - build_name: fortress-bionic
+            gz_distro: fortress
+            base_image_tag: bionic
+          - build_name: fortress-focal
+            gz_distro: fortress
+            base_image_tag: focal
+          - build_name: garden-focal
+            gz_distro: garden
+            base_image_tag: focal
+          - build_name: garden-jammy
+            gz_distro: garden
+            base_image_tag: jammy
+    name: "${{ matrix.base_image_name }}-${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}-source"
+    # always use latest linux worker, as it should not have any impact
+    # when it comes to building docker images.
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout repository
+      uses: actions/checkout@v2
+    - name: publish image
+      uses: matootie/github-docker@v3.1.0
+      with:
+        accessToken: ${{ secrets.ACCESS_TOKEN }}
+        containerRegistry: true
+        buildArgs: |
+            BASE_IMAGE_NAME=${{ matrix.base_image_name }}
+            BASE_IMAGE_TAG=${{ matrix.base_image_tag }}
+            VCS_REF=${{ github.sha }}
+            GZ_DISTRO=${{ matrix.gz_distro }}
+            GZ_INSTALL=source
+        imageName: "gz-${{ matrix.base_image_name }}"
+        tag: "${{ matrix.gz_distro }}-${{ matrix.base_image_tag }}-source"
