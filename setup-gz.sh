@@ -54,7 +54,6 @@ pip3 install --upgrade \
   catkin_pkg \
   colcon-common-extensions \
   coverage \
-  cryptography \
   empy \
   flake8-blind-except \
   flake8-builtins \
