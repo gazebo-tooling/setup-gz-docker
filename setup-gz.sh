@@ -2,6 +2,8 @@
 set -euxo pipefail
 
 readonly GZ_DISTRO=$1
+readonly GZ_INSTALL=$2
+
 EXCLUDE_APT="libignition|libsdformat|python3-ignition"
 
 apt-get update
@@ -81,19 +83,35 @@ pip3 install --upgrade \
   vcstool \
   wheel
 
-if [ "$GZ_DISTRO" != "none" ]; then
-  mkdir -p workspace/src
-  cd workspace
-  wget https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/collection-$GZ_DISTRO.yaml
-  vcs import src < collection-$GZ_DISTRO.yaml
+if [ "$GZ_INSTALL" == "base_only" ]; then
+  exit 0
+fi
 
-  ALL_PACKAGES=$( \
-    sort -u $(find . -iname 'packages-'$UBUNTU_VERSION'.apt' -o -iname 'packages.apt') | grep -Ev $EXCLUDE_APT | tr '\n' ' ')
+if [ "$GZ_DISTRO" == "none" ]; then
+  echo "GZ_DISTRO not set cannot continue"
+  exit 1
+fi
 
+
+mkdir -p workspace/src
+cd workspace
+wget https://raw.githubusercontent.com/gazebo-tooling/gazebodistro/master/collection-$GZ_DISTRO.yaml
+vcs import src < collection-$GZ_DISTRO.yaml
+
+ALL_PACKAGES=$( \
+  sort -u $(find . -iname 'packages-'$UBUNTU_VERSION'.apt' -o -iname 'packages.apt') | grep -Ev $EXCLUDE_APT | tr '\n' ' ')
+
+DEBIAN_FRONTEND=noninteractive \
+apt-get install --no-install-recommends --quiet --yes \
+  $ALL_PACKAGES
+
+if [ "$GZ_INSTALL" == "binary" ]; then
   DEBIAN_FRONTEND=noninteractive \
   apt-get install --no-install-recommends --quiet --yes \
-    $ALL_PACKAGES
+    gz-$GZ_DISTRO
+fi
 
+if [ "$GZ_INSTALL" != "source" ]; then
   cd .. && rm -rf workspace
 fi
 
